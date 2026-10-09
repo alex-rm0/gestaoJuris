@@ -1,7 +1,12 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import App from './App';
 
-it('mostra o nome da app', () => {
+vi.mock('./lib/firebase', () => ({ auth: {}, db: {} }));
+vi.mock('./lib/useSessaoAdmin', () => ({ useSessaoAdmin: () => 'fora' }));
+
+it('sem sessão, abre o login', () => {
+  window.history.pushState({}, '', '/');
   render(<App />);
-  expect(screen.getByText('App Júris')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
 });
