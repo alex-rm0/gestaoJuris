@@ -8,7 +8,7 @@ export const TOKEN_C = 'C'.repeat(32);
 
 export function iniciarAmbiente(): Promise<RulesTestEnvironment> {
   return initializeTestEnvironment({
-    projectId: 'demo-app-juris',
+    projectId: 'demo-app-juris-testes', // separado do projeto de desenvolvimento: os testes apagam a base de dados
     firestore: { rules: readFileSync('firestore.rules', 'utf8'), host: '127.0.0.1', port: 8080 },
   });
 }
