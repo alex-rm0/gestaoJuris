@@ -81,3 +81,12 @@ label { display: grid; gap: 0.3rem; font-weight: 500; }
 .celula.destaque { outline: 3px solid #f2a516; outline-offset: -2px; }
 .celula.focada { outline: 2px solid var(--texto); outline-offset: -2px; }
 .grelha-info p { margin: 0 0 0.5rem; }
+.juri-form { display: grid; gap: 1rem; }
+.campos { display: grid; gap: 0.75rem; }
+.duas-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.dias { border: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.dias legend { font-weight: 500; margin-bottom: 0.3rem; }
+.chip { display: inline-flex; flex-direction: row; align-items: center; gap: 0.3rem; padding: 0.3rem 0.6rem; border: 1px solid var(--borda); border-radius: 999px; font-weight: 400; cursor: pointer; }
+.chip input, .linha-escolha input { width: auto; }
+.linha-escolha { display: flex; flex-direction: row; align-items: center; gap: 0.75rem; font-weight: 400; cursor: pointer; padding: 0.6rem 0.9rem; }
+.escolha-formadores { gap: 0.4rem; }
