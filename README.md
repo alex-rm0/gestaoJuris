@@ -34,3 +34,12 @@ npm run test:emu     # regras de segurança e camada de dados (arranca o emulado
 6. Firebase → *Authentication* → *Settings* → *Authorized domains* → adicionar o domínio da Vercel.
 
 Sempre que `firestore.rules` mudar, repetir o passo 4.
+
+## Retirar os textos de ajuda
+
+As caixas "Como funciona" e as dicas por baixo dos campos e botões da gestão podem ser desligadas sem mexer no código:
+
+1. Vercel → projeto → *Settings* → *Environment Variables* → `VITE_MOSTRAR_AJUDA` = `false`.
+2. *Deployments* → *Redeploy* (as variáveis `VITE_*` só entram num novo build).
+
+Para voltar a mostrar, pôr `true` (ou apagar a variável) e fazer novo deploy. Continuam sempre visíveis: as instruções dos formadores, as explicações ao passar o rato, a legenda das cores e as confirmações.

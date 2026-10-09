@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, expect, it } from 'vitest';
-import { Ajuda } from './Ajuda';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Ajuda, Dica } from './Ajuda';
 
 beforeEach(() => { localStorage.clear(); });
 
@@ -30,4 +30,27 @@ it('funciona mesmo sem acesso ao armazenamento do browser', () => {
   } finally {
     Storage.prototype.getItem = original;
   }
+});
+
+describe('interruptor VITE_MOSTRAR_AJUDA', () => {
+  afterEach(() => { vi.unstubAllEnvs(); });
+
+  it('com VITE_MOSTRAR_AJUDA=false não mostra guias nem dicas (nem o botão "?")', () => {
+    vi.stubEnv('VITE_MOSTRAR_AJUDA', 'false');
+    const { container } = render(<><Ajuda chave="p" titulo="Como funciona"><p>Passo</p></Ajuda><Dica>Dica</Dica></>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('a ajuda dos formadores (sempre) continua visível mesmo desligada', () => {
+    vi.stubEnv('VITE_MOSTRAR_AJUDA', 'false');
+    render(<Ajuda chave="f" titulo="Como indicar" sempre><p>Arrasta</p></Ajuda>);
+    expect(screen.getByText('Arrasta')).toBeInTheDocument();
+  });
+
+  it('qualquer outro valor (ou nenhum) mantém a ajuda visível', () => {
+    vi.stubEnv('VITE_MOSTRAR_AJUDA', 'true');
+    render(<><Ajuda chave="p" titulo="Como funciona"><p>Passo</p></Ajuda><Dica>Dica</Dica></>);
+    expect(screen.getByText('Passo')).toBeInTheDocument();
+    expect(screen.getByText('Dica')).toBeInTheDocument();
+  });
 });

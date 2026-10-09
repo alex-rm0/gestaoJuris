@@ -66,7 +66,7 @@ export function PreencherJuriPage() {
 
       {editavel && (
         <div className="instrucoes">
-          <Ajuda chave="formador-preencher" titulo="Como indicar quando podes">
+          <Ajuda chave="formador-preencher" titulo="Como indicar quando podes" sempre>
             <ol>
               <li>Cada quadrado é meia hora. <strong>Carrega num quadrado e arrasta</strong> (com o dedo ou o rato) sobre as horas em que podes — ficam a <strong>verde</strong>.</li>
               <li>Ex.: se podes terça das 10h às 12h, carrega no quadrado das 10:00 de terça e arrasta até ao das 11:30.</li>
