@@ -63,3 +63,21 @@ label { display: grid; gap: 0.3rem; font-weight: 500; }
 .login { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
 .login form { width: min(360px, 100%); display: grid; gap: 1rem; }
 .formador.inativo { opacity: 0.65; }
+
+.grelha { display: grid; gap: 0.5rem; }
+.grelha-paginas { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.grelha-scroll { overflow-x: auto; }
+.grelha table { border-collapse: separate; border-spacing: 2px; user-select: none; -webkit-user-select: none; }
+.grelha th { font-size: 0.8rem; font-weight: 600; color: var(--subtil); padding: 0.2rem 0.3rem; white-space: nowrap; }
+.grelha-hora { text-align: right; vertical-align: top; transform: translateY(-0.55em); }
+.celula {
+  min-width: 3.2rem; height: 1.6rem; border-radius: 4px; text-align: center; font-size: 0.72rem; cursor: pointer;
+  background: color-mix(in srgb, var(--calor-cor) calc(var(--calor, 0) * 85%), var(--celula-vazia));
+  color: var(--texto);
+}
+.grelha-editavel .celula { --calor-cor: var(--calor-suave); touch-action: none; }
+.grelha-editavel .celula { background: color-mix(in srgb, var(--calor-cor) calc(var(--calor, 0) * 45%), var(--celula-vazia)); }
+.celula.sel { background: var(--sel); }
+.celula.destaque { outline: 3px solid #f2a516; outline-offset: -2px; }
+.celula.focada { outline: 2px solid var(--texto); outline-offset: -2px; }
+.grelha-info p { margin: 0 0 0.5rem; }
