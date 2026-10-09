@@ -90,3 +90,19 @@ label { display: grid; gap: 0.3rem; font-weight: 500; }
 .chip input, .linha-escolha input { width: auto; }
 .linha-escolha { display: flex; flex-direction: row; align-items: center; gap: 0.75rem; font-weight: 400; cursor: pointer; padding: 0.6rem 0.9rem; }
 .escolha-formadores { gap: 0.4rem; }
+.cabecalho { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+.cabecalho h1 { margin-bottom: 0.25rem; }
+.filtro { width: auto; margin-bottom: 1rem; }
+.cartoes-juri { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.cartao-juri { display: grid; gap: 0.3rem; color: inherit; text-decoration: none; height: 100%; }
+.cartao-juri:hover { border-color: var(--primario); }
+.cartao-juri p { margin: 0; }
+.linha { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.linha .acoes { margin-top: 0; }
+.progresso { height: 6px; background: var(--celula-vazia); border-radius: 999px; overflow: hidden; }
+.progresso > div { height: 100%; background: var(--primario); }
+.sugestoes { gap: 0.5rem; }
+.sugestao { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.sugestao p { margin: 0.2rem 0 0; }
+.medalha { display: inline-block; min-width: 1.6rem; }
+.detalhe h2 { margin-top: 1.75rem; }
