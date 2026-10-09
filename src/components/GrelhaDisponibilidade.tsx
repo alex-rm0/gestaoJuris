@@ -33,7 +33,9 @@ export function GrelhaDisponibilidade({ cfg, selecionados, onChange, disponiveis
   const porPagina = useDiasPorPagina();
   const [pagina, setPagina] = useState(0);
   const [info, setInfo] = useState<string | null>(null);
-  const pintura = useRef<{ modo: 'pintar' | 'apagar'; atual: Set<string> } | null>(null);
+  // `base` é a seleção antes do arrasto; o arrasto aplica o modo ao retângulo âncora→atual,
+  // por isso um movimento rápido que salte células não deixa buracos.
+  const pintura = useRef<{ modo: 'pintar' | 'apagar'; base: Set<string>; ancora: string; ultimo: string } | null>(null);
   const editavel = !!onChange && !!selecionados;
 
   const nPaginas = Math.max(1, Math.ceil(dias.length / porPagina));
@@ -50,22 +52,31 @@ export function GrelhaDisponibilidade({ cfg, selecionados, onChange, disponiveis
     };
   }, []);
 
+  function retangulo(a: string, b: string): string[] {
+    const [diaA, horaA] = a.split('T');
+    const [diaB, horaB] = b.split('T');
+    const [d0, d1] = [dias.indexOf(diaA), dias.indexOf(diaB)].sort((x, y) => x - y);
+    const [h0, h1] = [horas.indexOf(horaA), horas.indexOf(horaB)].sort((x, y) => x - y);
+    if (d0 < 0 || h0 < 0) return [];
+    return dias.slice(d0, d1 + 1).flatMap((d) => horas.slice(h0, h1 + 1).map((h) => `${d}T${h}`));
+  }
+
   function pintar(slot: string) {
     const p = pintura.current;
-    if (!p || !onChange) return;
-    const tem = p.atual.has(slot);
-    if ((p.modo === 'pintar' && tem) || (p.modo === 'apagar' && !tem)) return;
-    const novo = new Set(p.atual);
-    if (p.modo === 'pintar') novo.add(slot);
-    else novo.delete(slot);
-    p.atual = novo;
+    if (!p || !onChange || slot === p.ultimo) return;
+    p.ultimo = slot;
+    const novo = new Set(p.base);
+    for (const s of retangulo(p.ancora, slot)) {
+      if (p.modo === 'pintar') novo.add(s);
+      else novo.delete(s);
+    }
     onChange(novo);
   }
 
   function aoPremir(slot: string, e: PointerEvent) {
     if (!editavel) return;
     e.preventDefault();
-    pintura.current = { modo: selecionados!.has(slot) ? 'apagar' : 'pintar', atual: selecionados! };
+    pintura.current = { modo: selecionados!.has(slot) ? 'apagar' : 'pintar', base: selecionados!, ancora: slot, ultimo: '' };
     pintar(slot);
   }
 

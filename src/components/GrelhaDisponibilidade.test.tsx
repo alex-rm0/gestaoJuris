@@ -32,6 +32,28 @@ it('premir num bloco pintado apaga, e o arrasto continua a apagar', () => {
   expect(aoMudar).toHaveBeenLastCalledWith(['2026-10-12T11:00']);
 });
 
+it('arrasto rápido não salta blocos: pinta o retângulo entre o início e o ponto atual', () => {
+  const aoMudar = vi.fn();
+  render(<Editavel aoMudar={aoMudar} />);
+  document.elementFromPoint = vi.fn(() => celula('2026-10-12T11:00'));
+  fireEvent.pointerDown(celula('2026-10-12T10:00'));
+  fireEvent.pointerMove(celula('2026-10-12T10:00'));
+  fireEvent.pointerUp(window);
+  expect(aoMudar).toHaveBeenLastCalledWith(['2026-10-12T10:00', '2026-10-12T10:30', '2026-10-12T11:00']);
+});
+
+it('voltar atrás durante o arrasto desfaz o que saiu do retângulo', () => {
+  const aoMudar = vi.fn();
+  render(<Editavel aoMudar={aoMudar} />);
+  fireEvent.pointerDown(celula('2026-10-12T10:00'));
+  document.elementFromPoint = vi.fn(() => celula('2026-10-12T11:00'));
+  fireEvent.pointerMove(celula('2026-10-12T10:00'));
+  document.elementFromPoint = vi.fn(() => celula('2026-10-12T10:30'));
+  fireEvent.pointerMove(celula('2026-10-12T10:00'));
+  fireEvent.pointerUp(window);
+  expect(aoMudar).toHaveBeenLastCalledWith(['2026-10-12T10:00', '2026-10-12T10:30']);
+});
+
 it('depois de largar, mover não pinta', () => {
   const aoMudar = vi.fn();
   render(<Editavel aoMudar={aoMudar} />);
