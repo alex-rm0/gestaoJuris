@@ -14,7 +14,7 @@ vi.mock('../../data/formadores', () => ({
 it('não cria duplicados ao clicar duas vezes em Adicionar', () => {
   vi.mocked(criarFormador).mockReturnValue(new Promise(() => {}));
   render(<FormadoresPage />);
-  fireEvent.change(screen.getByPlaceholderText('Nome'), { target: { value: 'Maria' } });
+  fireEvent.change(screen.getByPlaceholderText('Nome do formador'), { target: { value: 'Maria' } });
   fireEvent.click(screen.getByRole('button', { name: 'Adicionar' }));
   fireEvent.click(screen.getByRole('button', { name: /Adicionar|A adicionar/ }));
   expect(criarFormador).toHaveBeenCalledTimes(1);
@@ -23,7 +23,7 @@ it('não cria duplicados ao clicar duas vezes em Adicionar', () => {
 it('mostra erro se não conseguir adicionar', async () => {
   vi.mocked(criarFormador).mockRejectedValue(new Error('falhou'));
   render(<FormadoresPage />);
-  fireEvent.change(screen.getByPlaceholderText('Nome'), { target: { value: 'Maria' } });
+  fireEvent.change(screen.getByPlaceholderText('Nome do formador'), { target: { value: 'Maria' } });
   fireEvent.click(screen.getByRole('button', { name: 'Adicionar' }));
-  expect(await screen.findByText('Não foi possível guardar. Verifica a ligação e tenta de novo.')).toBeInTheDocument();
+  expect(await screen.findByText('Não foi possível guardar. Verifique a ligação e tente de novo.')).toBeInTheDocument();
 });

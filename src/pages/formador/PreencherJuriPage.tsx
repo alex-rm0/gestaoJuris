@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { GrelhaDisponibilidade } from '../../components/GrelhaDisponibilidade';
+import { Ajuda } from '../../components/Ajuda';
+import { GrelhaDisponibilidade, LegendaGrelha } from '../../components/GrelhaDisponibilidade';
 import { guardarDisponibilidade, subscreverDisponibilidades } from '../../data/disponibilidades';
 import { subscreverJuri } from '../../data/juris';
 import { formatarData, formatarIntervalo } from '../../domain/formatar';
@@ -59,13 +60,22 @@ export function PreencherJuriPage() {
       {juri.estado === 'marcado' && juri.dataMarcada && (
         <p className="sucesso">✅ Marcado para <strong>{formatarIntervalo(juri.dataMarcada, fimDe(juri.dataMarcada, juri.duracaoMin))}</strong></p>
       )}
-      {juri.estado === 'cancelado' && <p className="aviso">Este júri foi cancelado.</p>}
+      {juri.estado === 'cancelado' && <p className="aviso">Este júri foi cancelado. Já não precisas de fazer nada.</p>}
+      {juri.estado === 'marcado' && <p className="subtil">A data já está marcada, por isso a grelha só pode ser consultada.</p>}
       {!editavel && estado === 'negado' && <p className="erro">{TEXTO_ESTADO.negado}</p>}
 
       {editavel && (
         <div className="instrucoes">
-          <p>Arrasta sobre os horários em que <strong>podes</strong> (fica a verde). Para tirar, arrasta de novo por cima.</p>
-          <p className="subtil">O azul por trás mostra onde os colegas já podem — tenta encaixar-te aí.</p>
+          <Ajuda chave="formador-preencher" titulo="Como indicar quando podes">
+            <ol>
+              <li>Cada quadrado é meia hora. <strong>Carrega num quadrado e arrasta</strong> (com o dedo ou o rato) sobre as horas em que podes — ficam a <strong>verde</strong>.</li>
+              <li>Ex.: se podes terça das 10h às 12h, carrega no quadrado das 10:00 de terça e arrasta até ao das 11:30.</li>
+              <li>Enganaste-te? Arrasta de novo por cima para tirar.</li>
+              <li>Não há botão de enviar: <strong>fica guardado sozinho</strong> (aparece “Guardado ✓”).</li>
+            </ol>
+            <p>Os quadrados a <strong>azul</strong> são horas em que colegas já podem — se conseguires, escolhe também essas.</p>
+          </Ajuda>
+          <LegendaGrelha modo="formador" />
           <p className={`estado-gravacao ${estado}`} aria-live="polite">
             {!online ? 'Sem ligação — as alterações serão guardadas quando voltar.' : TEXTO_ESTADO[estado]}
           </p>

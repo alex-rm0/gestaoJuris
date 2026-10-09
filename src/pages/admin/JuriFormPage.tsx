@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Ajuda, Dica } from '../../components/Ajuda';
 import { obterDisponibilidades } from '../../data/disponibilidades';
 import { subscreverFormadores } from '../../data/formadores';
 import { criarJuri, editarJuri, obterJuri } from '../../data/juris';
@@ -94,21 +95,28 @@ export function JuriFormPage() {
   return (
     <form className="juri-form" onSubmit={submeter} noValidate>
       <h1>{id ? 'Editar júri' : 'Novo júri'}</h1>
+      <Ajuda chave="juri-form" titulo="Como preencher">
+        <p>Defina <strong>quando</strong> o júri pode acontecer e <strong>quem</strong> tem de estar presente. Os formadores escolhidos só vão ver esses dias e horas para indicar quando podem.</p>
+        <p>Não precisa de saber já a data certa — é para isso que serve a app.</p>
+      </Ajuda>
 
       <div className="cartao campos">
         <label>Título<input value={form.titulo} onChange={(e) => alterar('titulo', e.target.value)} placeholder="Ex.: Júri Técnico de Contabilidade" /></label>
+        <Dica>O nome que os formadores vão ver.</Dica>
         {erros.titulo && <p className="erro">{erros.titulo}</p>}
 
         <div className="duas-colunas">
           <label>De<input type="date" value={form.dataInicio} onChange={(e) => alterar('dataInicio', e.target.value)} /></label>
           <label>Até<input type="date" value={form.dataFim} onChange={(e) => alterar('dataFim', e.target.value)} /></label>
         </div>
+        <Dica>Período em que o júri pode acontecer. Os formadores só veem estes dias.</Dica>
         {erros.datas && <p className="erro">{erros.datas}</p>}
 
         <div className="duas-colunas">
           <label>Das<input type="time" step={1800} value={form.horaInicio} onChange={(e) => alterar('horaInicio', e.target.value)} /></label>
           <label>Às<input type="time" step={1800} value={form.horaFim} onChange={(e) => alterar('horaFim', e.target.value)} /></label>
         </div>
+        <Dica>Horário de cada dia em que os formadores podem indicar disponibilidade (em horas certas ou meias horas, ex.: 09:00 ou 09:30).</Dica>
         {erros.horas && <p className="erro">{erros.horas}</p>}
 
         <fieldset className="dias">
@@ -120,6 +128,7 @@ export function JuriFormPage() {
             </label>
           ))}
         </fieldset>
+        <Dica>Os dias desmarcados não aparecem aos formadores.</Dica>
         {erros.diasSemana && <p className="erro">{erros.diasSemana}</p>}
 
         <label>Duração
@@ -127,17 +136,20 @@ export function JuriFormPage() {
             {DURACOES.map((d) => <option key={d} value={d}>{d < 60 ? `${d} min` : `${Math.floor(d / 60)} h${d % 60 ? ' 30' : ''}`}</option>)}
           </select>
         </label>
+        <Dica>Quanto tempo dura o júri. A app procura horários seguidos com esta duração em que os formadores possam.</Dica>
         {erros.duracaoMin && <p className="erro">{erros.duracaoMin}</p>}
 
-        <label>Notas<textarea rows={2} value={form.notas} onChange={(e) => alterar('notas', e.target.value)} /></label>
+        <label>Notas (opcional)<textarea rows={2} value={form.notas} onChange={(e) => alterar('notas', e.target.value)} placeholder="Ex.: Sala 2, levar processos" /></label>
+        <Dica>Os formadores também veem as notas.</Dica>
       </div>
 
       {mudouGrelha && temRespostas && (
-        <p className="aviso">Já há respostas neste júri. Os blocos que ficarem fora do novo intervalo ou horário deixam de contar (não são apagados).</p>
+        <p className="aviso">Já há respostas neste júri. As disponibilidades que ficarem fora do novo período ou horário deixam de contar (não são apagadas).</p>
       )}
 
-      <h2>Formadores ({sel.size})</h2>
-      <input className="pesquisa" placeholder="Pesquisar por nome ou área" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
+      <h2>Formadores ({sel.size} escolhidos)</h2>
+      <Dica>Marque os formadores que têm de estar no júri. Só eles recebem este júri no link pessoal.</Dica>
+      <input className="pesquisa" type="search" aria-label="Pesquisar formadores" placeholder="Pesquisar por nome ou área" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
       {erros.participantes && <p className="erro">{erros.participantes}</p>}
       <ul className="lista escolha-formadores">
         {opcoes.map((f) => (
@@ -148,12 +160,12 @@ export function JuriFormPage() {
             </label>
           </li>
         ))}
-        {opcoes.length === 0 && <p className="vazio">Sem formadores. <Link to="/formadores">Adicionar formadores</Link></p>}
+        {opcoes.length === 0 && <p className="vazio">Ainda não há formadores. Primeiro <Link to="/formadores">adicione os formadores</Link> e depois volte aqui.</p>}
       </ul>
 
       <div className="acoes">
-        <button className="btn primario" disabled={aGuardar}>{aGuardar ? 'A guardar…' : 'Guardar'}</button>
-        <Link className="btn" to={id ? `/juris/${id}` : '/'}>Cancelar</Link>
+        <button className="btn primario" disabled={aGuardar}>{aGuardar ? 'A guardar…' : id ? 'Guardar alterações' : 'Criar júri'}</button>
+        <Link className="btn" to={id ? `/juris/${id}` : '/'}>Voltar sem guardar</Link>
       </div>
     </form>
   );

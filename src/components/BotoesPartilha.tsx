@@ -13,8 +13,8 @@ export function BotoesPartilha({ nome, token }: { nome: string; token: string })
 
   return (
     <>
-      <button className="btn" onClick={copiar}>{copiado ? 'Copiado ✓' : 'Copiar link'}</button>
-      <a className="btn whatsapp" href={linkWhatsApp(mensagemConvite(nome, link))} target="_blank" rel="noreferrer">WhatsApp</a>
+      <button className="btn" onClick={copiar} title="Copia o link pessoal do formador para colar numa mensagem ou email">{copiado ? 'Copiado ✓' : 'Copiar link'}</button>
+      <a className="btn whatsapp" href={linkWhatsApp(mensagemConvite(nome, link))} target="_blank" rel="noreferrer" title="Abre o WhatsApp com uma mensagem pronta com o link. Só tem de escolher o contacto.">WhatsApp</a>
     </>
   );
 }

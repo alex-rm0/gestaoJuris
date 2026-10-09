@@ -84,30 +84,30 @@ export type ErrosJuri = Partial<Record<'titulo' | 'datas' | 'horas' | 'duracaoMi
 
 export function validarJuri(input: JuriInput, nParticipantes: number): ErrosJuri {
   const e: ErrosJuri = {};
-  if (!input.titulo.trim()) e.titulo = 'Indica um título.';
+  if (!input.titulo.trim()) e.titulo = 'Indique um título.';
 
   if (input.duracaoMin % 30 !== 0 || input.duracaoMin < 30 || input.duracaoMin > 240) {
     e.duracaoMin = 'A duração tem de ser entre 30 e 240 minutos, em múltiplos de 30.';
   }
 
-  if (input.diasSemana.length === 0) e.diasSemana = 'Escolhe pelo menos um dia da semana.';
+  if (input.diasSemana.length === 0) e.diasSemana = 'Escolha pelo menos um dia da semana.';
 
-  if (!input.dataInicio || !input.dataFim) e.datas = 'Indica as datas de início e de fim.';
+  if (!input.dataInicio || !input.dataFim) e.datas = 'Indique as datas de início e de fim.';
   else if (input.dataInicio > input.dataFim) e.datas = 'A data de início tem de ser anterior ou igual à data de fim.';
-  else if ((paraUTC(input.dataFim) - paraUTC(input.dataInicio)) / MS_DIA + 1 > MAX_DIAS) e.datas = `O intervalo não pode ter mais de ${MAX_DIAS} dias.`;
-  else if (!e.diasSemana && gerarDias(input).length === 0) e.datas = 'O intervalo não inclui nenhum dos dias da semana escolhidos.';
+  else if ((paraUTC(input.dataFim) - paraUTC(input.dataInicio)) / MS_DIA + 1 > MAX_DIAS) e.datas = `O período não pode ter mais de ${MAX_DIAS} dias.`;
+  else if (!e.diasSemana && gerarDias(input).length === 0) e.datas = 'O período não inclui nenhum dos dias da semana escolhidos.';
 
   const ini = paraMinutos(input.horaInicio);
   const fim = paraMinutos(input.horaFim);
-  if (Number.isNaN(ini) || Number.isNaN(fim)) e.horas = 'Indica o horário.';
+  if (Number.isNaN(ini) || Number.isNaN(fim)) e.horas = 'Indique o horário.';
   else if (ini % 30 !== 0 || fim % 30 !== 0) e.horas = 'As horas têm de ser em múltiplos de 30 minutos (ex.: 09:00, 09:30).';
   else if (ini >= fim) e.horas = 'A hora de início tem de ser anterior à hora de fim.';
   else if (fim - ini < input.duracaoMin) e.horas = 'O horário diário é mais curto do que a duração do júri.';
 
   if (!e.datas && !e.horas && !e.diasSemana && gerarGrelha(input).length > MAX_BLOCOS) {
-    e.datas = 'O júri tem demasiados horários possíveis. Reduz o intervalo de datas ou o horário diário.';
+    e.datas = 'O júri tem demasiados horários possíveis. Reduza o período ou o horário diário.';
   }
 
-  if (nParticipantes < 1) e.participantes = 'Escolhe pelo menos um formador.';
+  if (nParticipantes < 1) e.participantes = 'Escolha pelo menos um formador.';
   return e;
 }

@@ -144,3 +144,27 @@ export function GrelhaDisponibilidade({ cfg, selecionados, onChange, disponiveis
     </div>
   );
 }
+
+/** Explica as cores da grelha. */
+export function LegendaGrelha({ modo }: { modo: 'gestao' | 'formador' }) {
+  const amostra = (calor: number, cor = 'var(--calor-cor)') => (
+    <span
+      className="legenda-cor"
+      style={{ background: `color-mix(in srgb, ${cor} ${calor * 100}%, var(--celula-vazia))` }}
+    />
+  );
+  if (modo === 'formador') {
+    return (
+      <div className="legenda" aria-label="Legenda das cores">
+        <span className="legenda-amostra"><span className="legenda-cor" style={{ background: 'var(--sel)' }} /> Pode</span>
+        <span className="legenda-amostra">{amostra(0.45, 'var(--calor-suave)')} Colegas que já podem (mais escuro = mais colegas)</span>
+      </div>
+    );
+  }
+  return (
+    <div className="legenda" aria-label="Legenda das cores">
+      <span className="legenda-amostra">Menos {amostra(0)}{amostra(0.3)}{amostra(0.6)}{amostra(0.85)} Mais formadores disponíveis</span>
+      <span className="legenda-amostra"><span className="legenda-cor" style={{ outline: '3px solid #f2a516', outlineOffset: '-2px' }} /> Data marcada</span>
+    </div>
+  );
+}

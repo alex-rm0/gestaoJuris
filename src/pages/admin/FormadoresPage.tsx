@@ -1,11 +1,12 @@
 import { useState, type FormEvent } from 'react';
+import { Ajuda, Dica } from '../../components/Ajuda';
 import { BotoesPartilha } from '../../components/BotoesPartilha';
 import { criarFormador, editarFormador, regenerarLink, subscreverFormadores } from '../../data/formadores';
 import type { Formador } from '../../domain/tipos';
 import { db } from '../../lib/firebase';
 import { useSubscricao } from '../../lib/useSubscricao';
 
-const ERRO_GUARDAR = 'Não foi possível guardar. Verifica a ligação e tenta de novo.';
+const ERRO_GUARDAR = 'Não foi possível guardar. Verifique a ligação e tente de novo.';
 
 /** Corre uma ação de gravação e devolve a mensagem de erro (ou null). */
 async function tentar(acao: () => Promise<unknown>): Promise<string | null> {
@@ -48,15 +49,22 @@ export function FormadoresPage() {
   return (
     <section>
       <h1>Formadores</h1>
+      <Ajuda chave="formadores" titulo="Como funcionam os formadores">
+        <ol>
+          <li>Adicione cada formador uma vez, com o nome e a área (a área é só para si, para os encontrar mais depressa).</li>
+          <li>Cada formador tem um <strong>link pessoal</strong>. Envie-o com o botão <strong>WhatsApp</strong> ou <strong>Copiar link</strong>.</li>
+          <li>O link é sempre o mesmo: o formador só precisa de o receber uma vez e serve para todos os júris.</li>
+        </ol>
+      </Ajuda>
       <form className="cartao form-linha" onSubmit={adicionar}>
-        <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
-        <input placeholder="Área(s)" value={area} onChange={(e) => setArea(e.target.value)} />
+        <input placeholder="Nome do formador" value={nome} onChange={(e) => setNome(e.target.value)} required aria-label="Nome do formador" />
+        <input placeholder="Área(s), ex.: Contabilidade, Gestão" value={area} onChange={(e) => setArea(e.target.value)} aria-label="Área(s)" />
         <button className="btn primario" disabled={aAdicionar}>{aAdicionar ? 'A adicionar…' : 'Adicionar'}</button>
       </form>
       {erro && <p className="erro">{erro}</p>}
-      <input className="pesquisa" placeholder="Pesquisar por nome ou área" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
+      <input className="pesquisa" type="search" aria-label="Pesquisar formadores" placeholder="Pesquisar por nome ou área" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
       {visiveis.length === 0 && (
-        <p className="vazio">{formadores.length ? 'Nenhum formador corresponde à pesquisa.' : 'Ainda não há formadores. Adiciona o primeiro acima.'}</p>
+        <p className="vazio">{formadores.length ? 'Nenhum formador corresponde à pesquisa.' : 'Ainda não há formadores. Escreva o nome do primeiro acima e carregue em Adicionar.'}</p>
       )}
       <ul className="lista">
         {visiveis.map((f) => <LinhaFormador key={f.token} f={f} />)}
@@ -93,7 +101,7 @@ function LinhaFormador({ f }: { f: Formador }) {
   }
 
   async function novoLink() {
-    if (!confirm(`Gerar um novo link para ${f.nome}? O link antigo deixa de funcionar.`)) return;
+    if (!confirm(`Gerar um novo link para ${f.nome}? O link antigo deixa de funcionar e terá de enviar o novo ao formador. As disponibilidades que ele já indicou mantêm-se.`)) return;
     await executar(() => regenerarLink(db, f.token));
   }
 
@@ -116,10 +124,20 @@ function LinhaFormador({ f }: { f: Formador }) {
       {erro && <p className="erro">{erro}</p>}
       <div className="acoes">
         {f.ativo && <BotoesPartilha nome={f.nome} token={f.token} />}
-        {!aEditar && <button className="btn" onClick={() => setAEditar(true)}>Editar</button>}
-        <button className="btn" disabled={ocupado} onClick={() => executar(() => editarFormador(db, f.token, { ativo: !f.ativo }))}>{f.ativo ? 'Desativar' : 'Ativar'}</button>
-        <button className="btn" disabled={ocupado} onClick={novoLink}>Gerar novo link</button>
+        {!aEditar && <button className="btn" title="Alterar o nome ou a área" onClick={() => setAEditar(true)}>Editar</button>}
+        <button
+          className="btn"
+          disabled={ocupado}
+          title={f.ativo ? 'O formador deixa de conseguir abrir o link. Pode voltar a ativá-lo quando quiser.' : 'O link volta a funcionar.'}
+          onClick={() => executar(() => editarFormador(db, f.token, { ativo: !f.ativo }))}
+        >
+          {f.ativo ? 'Desativar' : 'Ativar'}
+        </button>
+        <button className="btn" disabled={ocupado} title="Use só se o link foi enviado à pessoa errada. O link antigo deixa de funcionar." onClick={novoLink}>Gerar novo link</button>
       </div>
+      {f.ativo
+        ? <Dica>Envie o link uma única vez — o formador usa-o para todos os júris.</Dica>
+        : <Dica>Desativado: o link deste formador não abre. Carregue em Ativar para voltar a permitir.</Dica>}
     </li>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Ajuda } from '../../components/Ajuda';
 import { subscreverDisponibilidades } from '../../data/disponibilidades';
 import { subscreverJuris } from '../../data/juris';
 import { formatarData, formatarIntervalo } from '../../domain/formatar';
@@ -28,8 +29,16 @@ export function PainelPage() {
     <section>
       <div className="cabecalho">
         <h1>Júris</h1>
-        <Link className="btn primario" to="/juris/novo">+ Novo júri</Link>
+        <Link className="btn primario" to="/juris/novo" title="Criar um júri e escolher o período e os formadores">+ Novo júri</Link>
       </div>
+      <Ajuda chave="painel" titulo="Como funciona">
+        <ol>
+          <li>Adicione os formadores em <Link to="/formadores">Formadores</Link> (só é preciso uma vez).</li>
+          <li>Carregue em <strong>+ Novo júri</strong>, escolha o período em que pode acontecer e os formadores.</li>
+          <li>Envie a cada formador o seu link pessoal (botão <strong>WhatsApp</strong>). Eles marcam quando podem.</li>
+          <li>Volte aqui: em cada júri aparece a melhor data. Abra o júri e carregue em <strong>Marcar</strong>.</li>
+        </ol>
+      </Ajuda>
       <div className="barra-filtros">
       <input type="search" className="pesquisa-juris" placeholder="Pesquisar júris (título, notas ou formador)" value={pesquisa} onChange={(e) => setPesquisa(e.target.value)} aria-label="Pesquisar júris" />
       <select className="filtro" value={filtro} onChange={(e) => setFiltro(e.target.value as EstadoJuri | 'todos')} aria-label="Filtrar por estado">
@@ -39,7 +48,7 @@ export function PainelPage() {
         <option value="cancelado">Cancelados</option>
       </select>
       </div>
-      {juris.length === 0 && <p className="vazio">Ainda não há júris. Cria o primeiro com “+ Novo júri”.</p>}
+      {juris.length === 0 && <p className="vazio">Ainda não há júris. Crie o primeiro com o botão “+ Novo júri”, no canto superior direito.</p>}
       {juris.length > 0 && lista.length === 0 && <p className="vazio">{pesquisa.trim() ? 'Nenhum júri corresponde à pesquisa.' : 'Nenhum júri neste estado.'}</p>}
       <ul className="lista cartoes-juri">
         {lista.map((j) => <CartaoJuri key={j.id} juri={j} />)}
@@ -70,8 +79,8 @@ function CartaoJuri({ juri }: { juri: Juri }) {
             </div>
             <p className="subtil">Responderam {responderam}/{total}</p>
             {r && (r.semRespostas
-              ? <p className="subtil">Ainda sem respostas</p>
-              : melhor && <p>Melhor: <strong>{formatarIntervalo(melhor.inicio, melhor.fim)}</strong> · {melhor.disponiveis.length}/{total}</p>)}
+              ? <p className="subtil">Ainda sem respostas — envie os links aos formadores</p>
+              : melhor && <p>Melhor data até agora: <strong>{formatarIntervalo(melhor.inicio, melhor.fim)}</strong> · {melhor.disponiveis.length}/{total}</p>)}
           </>
         )}
         {juri.estado === 'marcado' && juri.dataMarcada && (

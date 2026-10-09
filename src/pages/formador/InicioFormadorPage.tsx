@@ -20,9 +20,10 @@ export function InicioFormadorPage() {
   return (
     <section>
       <h1>Olá, {nome.split(' ')[0]} 👋</h1>
+      <p className="subtil">Este é o teu link pessoal: guarda-o, serve para todos os júris. Escolhe um júri abaixo e indica quando podes.</p>
       <h2>Júris abertos</h2>
       {abertos.length === 0 ? (
-        <p className="vazio">Não tens júris pendentes.</p>
+        <p className="vazio">Não tens júris por preencher. Quando houver um novo, aparece aqui.</p>
       ) : (
         <ul className="lista">{abertos.map((j) => <CartaoAberto key={j.id} juri={j} />)}</ul>
       )}

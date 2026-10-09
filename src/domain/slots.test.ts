@@ -75,12 +75,12 @@ describe('validarJuri (JU-R04..R07)', () => {
 
   it('intervalo sem nenhum dos dias da semana escolhidos', () => {
     expect(validarJuri({ ...base, dataInicio: '2026-10-17', dataFim: '2026-10-18' }, 2).datas)
-      .toBe('O intervalo não inclui nenhum dos dias da semana escolhidos.');
+      .toBe('O período não inclui nenhum dos dias da semana escolhidos.');
   });
 
   it('intervalo maior que 62 dias', () => {
     expect(validarJuri({ ...base, dataInicio: '2026-10-01', dataFim: '2026-12-15' }, 2).datas)
-      .toBe('O intervalo não pode ter mais de 62 dias.');
+      .toBe('O período não pode ter mais de 62 dias.');
   });
 
   it('horas fora de múltiplos de 30, invertidas ou mais curtas que a duração', () => {
@@ -106,6 +106,6 @@ describe('limite da grelha', () => {
       titulo: 'X', notas: '', dataInicio: '2026-10-01', dataFim: '2026-12-01',
       horaInicio: '07:00', horaFim: '23:30', diasSemana: [1, 2, 3, 4, 5, 6, 7], duracaoMin: 60,
     };
-    expect(validarJuri(grande, 1).datas).toBe('O júri tem demasiados horários possíveis. Reduz o intervalo de datas ou o horário diário.');
+    expect(validarJuri(grande, 1).datas).toBe('O júri tem demasiados horários possíveis. Reduza o período ou o horário diário.');
   });
 });
