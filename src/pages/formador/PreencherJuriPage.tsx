@@ -18,6 +18,7 @@ const TEXTO_ESTADO: Record<EstadoGravacao, string> = {
   aGuardar: 'A guardar…',
   guardado: 'Guardado ✓',
   erro: 'Não foi possível guardar — a tentar de novo…',
+  negado: 'Não foi possível guardar: este link já não está ativo ou o júri foi fechado. Recarrega a página.',
 };
 
 export function PreencherJuriPage() {
@@ -59,6 +60,7 @@ export function PreencherJuriPage() {
         <p className="sucesso">✅ Marcado para <strong>{formatarIntervalo(juri.dataMarcada, fimDe(juri.dataMarcada, juri.duracaoMin))}</strong></p>
       )}
       {juri.estado === 'cancelado' && <p className="aviso">Este júri foi cancelado.</p>}
+      {!editavel && estado === 'negado' && <p className="erro">{TEXTO_ESTADO.negado}</p>}
 
       {editavel && (
         <div className="instrucoes">

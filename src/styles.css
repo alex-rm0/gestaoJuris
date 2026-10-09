@@ -113,3 +113,4 @@ label { display: grid; gap: 0.3rem; font-weight: 500; }
 .estado-gravacao { min-height: 1.3em; font-weight: 500; }
 .estado-gravacao.guardado { color: var(--sucesso-texto); }
 .estado-gravacao.erro { color: var(--perigo); }
+.estado-gravacao.negado { color: var(--perigo); }

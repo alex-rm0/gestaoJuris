@@ -99,3 +99,13 @@ describe('validarJuri (JU-R04..R07)', () => {
     expect(validarJuri(base, 0).participantes).toBeDefined();
   });
 });
+
+describe('limite da grelha', () => {
+  it('recusa júris com mais de 2000 blocos (limite das regras)', () => {
+    const grande: JuriInput = {
+      titulo: 'X', notas: '', dataInicio: '2026-10-01', dataFim: '2026-12-01',
+      horaInicio: '07:00', horaFim: '23:30', diasSemana: [1, 2, 3, 4, 5, 6, 7], duracaoMin: 60,
+    };
+    expect(validarJuri(grande, 1).datas).toBe('O júri tem demasiados horários possíveis. Reduz o intervalo de datas ou o horário diário.');
+  });
+});

@@ -2,6 +2,8 @@ import type { JuriConfig, JuriInput } from './tipos';
 
 const MS_DIA = 86_400_000;
 export const MAX_DIAS = 62;
+/** Igual ao limite de `slots` em firestore.rules. */
+export const MAX_BLOCOS = 2000;
 
 function paraUTC(data: string): number {
   const [a, m, d] = data.split('-').map(Number);
@@ -101,6 +103,10 @@ export function validarJuri(input: JuriInput, nParticipantes: number): ErrosJuri
   else if (ini % 30 !== 0 || fim % 30 !== 0) e.horas = 'As horas têm de ser em múltiplos de 30 minutos (ex.: 09:00, 09:30).';
   else if (ini >= fim) e.horas = 'A hora de início tem de ser anterior à hora de fim.';
   else if (fim - ini < input.duracaoMin) e.horas = 'O horário diário é mais curto do que a duração do júri.';
+
+  if (!e.datas && !e.horas && !e.diasSemana && gerarGrelha(input).length > MAX_BLOCOS) {
+    e.datas = 'O júri tem demasiados horários possíveis. Reduz o intervalo de datas ou o horário diário.';
+  }
 
   if (nParticipantes < 1) e.participantes = 'Escolhe pelo menos um formador.';
   return e;
