@@ -3,7 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { guardarDisponibilidade, obterDisponibilidades } from '../../src/data/disponibilidades';
 import { criarFormador, editarFormador, regenerarLink } from '../../src/data/formadores';
-import { cancelarJuri, criarJuri, marcarJuri, obterJuri, reabrirJuri, subscreverJurisDoFormador } from '../../src/data/juris';
+import { cancelarJuri, criarJuri, eliminarJuri, marcarJuri, obterJuri, reabrirJuri, subscreverJurisDoFormador } from '../../src/data/juris';
 import { ligarSessao } from '../../src/data/sessao';
 import type { Juri, JuriInput } from '../../src/domain/tipos';
 import { fs, iniciarAmbiente, semear, TOKEN_A, TOKEN_C } from './ajuda';
@@ -65,6 +65,16 @@ describe('júris', () => {
     expect(await obterJuri(admin(), 'j1')).toMatchObject({ estado: 'cancelado', dataMarcada: null });
     await reabrirJuri(admin(), 'j1');
     expect(await obterJuri(admin(), 'j1')).toMatchObject({ estado: 'aberto', dataMarcada: null });
+  });
+
+  it('eliminar apaga o júri e as disponibilidades', async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await guardarDisponibilidade(fs(ctx), 'j1', 'pidA', ['2026-10-12T09:00']);
+      await guardarDisponibilidade(fs(ctx), 'j1', 'pidB', ['2026-10-12T09:00']);
+    });
+    await eliminarJuri(admin(), 'j1');
+    expect(await obterJuri(admin(), 'j1')).toBeNull();
+    expect(await obterDisponibilidades(admin(), 'j1')).toEqual([]);
   });
 
   it('formador só recebe os seus júris', async () => {

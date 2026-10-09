@@ -1,9 +1,9 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BotoesPartilha } from '../../components/BotoesPartilha';
 import { GrelhaDisponibilidade } from '../../components/GrelhaDisponibilidade';
 import { subscreverDisponibilidades } from '../../data/disponibilidades';
 import { subscreverFormadores } from '../../data/formadores';
-import { cancelarJuri, marcarJuri, reabrirJuri, subscreverJuri } from '../../data/juris';
+import { cancelarJuri, eliminarJuri, marcarJuri, reabrirJuri, subscreverJuri } from '../../data/juris';
 import { formatarData, formatarIntervalo } from '../../domain/formatar';
 import { eInicioValido, fimDe } from '../../domain/slots';
 import { contarPorSlot, respondeu, sugerirDatas } from '../../domain/sugestoes';
@@ -15,6 +15,7 @@ const MEDALHAS = ['🥇', '🥈', '🥉', '4.º', '5.º'];
 
 export function JuriDetalhePage() {
   const { id = '' } = useParams();
+  const nav = useNavigate();
   const juri = useSubscricao<Juri | null>((cb) => subscreverJuri(db, id, cb), [id]);
   const disps = useSubscricao<Disponibilidade[]>((cb) => subscreverDisponibilidades(db, id, cb), [id]);
   const formadores = useSubscricao<Formador[]>((cb) => subscreverFormadores(db, cb), []);
@@ -36,6 +37,16 @@ export function JuriDetalhePage() {
     await marcarJuri(db, juri!.id, inicio);
   }
 
+  async function eliminar() {
+    if (!confirm(`Eliminar «${juri!.titulo}»? As disponibilidades dos formadores também são apagadas. Isto não pode ser desfeito.`)) return;
+    try {
+      await eliminarJuri(db, juri!.id);
+      nav('/', { replace: true });
+    } catch {
+      alert('Não foi possível eliminar. Verifica a ligação e tenta de novo.');
+    }
+  }
+
   async function cancelar() {
     if (confirm(`Cancelar “${juri!.titulo}”?`)) await cancelarJuri(db, juri!.id);
   }
@@ -54,6 +65,7 @@ export function JuriDetalhePage() {
           <Link className="btn" to={`/juris/${juri.id}/editar`}>Editar</Link>
           {aberto && <button className="btn perigo" onClick={cancelar}>Cancelar júri</button>}
           {!aberto && <button className="btn" onClick={() => reabrirJuri(db, juri.id)}>Reabrir</button>}
+          <button className="btn perigo" onClick={eliminar}>Eliminar</button>
         </div>
       </div>
 

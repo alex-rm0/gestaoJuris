@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { subscreverDisponibilidades } from '../../data/disponibilidades';
 import { subscreverJuris } from '../../data/juris';
 import { formatarData, formatarIntervalo } from '../../domain/formatar';
+import { correspondePesquisa } from '../../domain/pesquisa';
 import { fimDe } from '../../domain/slots';
 import { respondeu, sugerirDatas } from '../../domain/sugestoes';
 import type { Disponibilidade, EstadoJuri, Juri } from '../../domain/tipos';
@@ -15,10 +16,12 @@ const ROTULO: Record<EstadoJuri, string> = { aberto: 'Aberto', marcado: 'Marcado
 export function PainelPage() {
   const juris = useSubscricao<Juri[]>((cb) => subscreverJuris(db, cb), []);
   const [filtro, setFiltro] = useState<EstadoJuri | 'todos'>('todos');
+  const [pesquisa, setPesquisa] = useState('');
 
   if (!juris) return <p>A carregar…</p>;
   const lista = juris
     .filter((j) => filtro === 'todos' || j.estado === filtro)
+    .filter((j) => correspondePesquisa(j, pesquisa))
     .sort((a, b) => ORDEM[a.estado] - ORDEM[b.estado] || a.dataInicio.localeCompare(b.dataInicio));
 
   return (
@@ -27,14 +30,17 @@ export function PainelPage() {
         <h1>Júris</h1>
         <Link className="btn primario" to="/juris/novo">+ Novo júri</Link>
       </div>
+      <div className="barra-filtros">
+      <input type="search" className="pesquisa-juris" placeholder="Pesquisar júris (título, notas ou formador)" value={pesquisa} onChange={(e) => setPesquisa(e.target.value)} aria-label="Pesquisar júris" />
       <select className="filtro" value={filtro} onChange={(e) => setFiltro(e.target.value as EstadoJuri | 'todos')} aria-label="Filtrar por estado">
         <option value="todos">Todos</option>
         <option value="aberto">Abertos</option>
         <option value="marcado">Marcados</option>
         <option value="cancelado">Cancelados</option>
       </select>
+      </div>
       {juris.length === 0 && <p className="vazio">Ainda não há júris. Cria o primeiro com “+ Novo júri”.</p>}
-      {juris.length > 0 && lista.length === 0 && <p className="vazio">Nenhum júri neste estado.</p>}
+      {juris.length > 0 && lista.length === 0 && <p className="vazio">{pesquisa.trim() ? 'Nenhum júri corresponde à pesquisa.' : 'Nenhum júri neste estado.'}</p>}
       <ul className="lista cartoes-juri">
         {lista.map((j) => <CartaoJuri key={j.id} juri={j} />)}
       </ul>

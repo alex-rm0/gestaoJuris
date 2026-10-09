@@ -114,3 +114,6 @@ label { display: grid; gap: 0.3rem; font-weight: 500; }
 .estado-gravacao.guardado { color: var(--sucesso-texto); }
 .estado-gravacao.erro { color: var(--perigo); }
 .estado-gravacao.negado { color: var(--perigo); }
+.barra-filtros { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.barra-filtros .pesquisa-juris { flex: 1 1 240px; width: auto; }
+.barra-filtros .filtro { margin-bottom: 0; }

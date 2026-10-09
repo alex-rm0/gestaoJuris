@@ -63,6 +63,12 @@ describe('júris (JU-R09)', () => {
     await assertFails(getDocs(query(collection(ana(), 'juris'), where('participantesIds', 'array-contains', 'pidB'))));
     await assertFails(getDocs(collection(ana(), 'juris')));
   });
+  it('só a admin elimina júris e disponibilidades', async () => {
+    await assertFails(deleteDoc(doc(ana(), 'juris/j1')));
+    await assertFails(deleteDoc(doc(ana(), 'juris/j1/disponibilidades/pidA')));
+    await assertSucceeds(deleteDoc(doc(admin(), 'juris/j1')));
+  });
+
   it('só a admin escreve júris', async () => {
     await assertFails(updateDoc(doc(ana(), 'juris/j1'), { estado: 'cancelado' }));
     await assertSucceeds(updateDoc(doc(admin(), 'juris/j1'), { estado: 'cancelado' }));

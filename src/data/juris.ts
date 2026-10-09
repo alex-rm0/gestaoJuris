@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDoc, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where,
+  collection, doc, getDoc, getDocs, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where, writeBatch,
   type DocumentData, type Firestore, type Unsubscribe,
 } from 'firebase/firestore';
 import type { Juri, JuriInput } from '../domain/tipos';
@@ -58,6 +58,15 @@ export async function cancelarJuri(db: Firestore, id: string): Promise<void> {
 
 export async function reabrirJuri(db: Firestore, id: string): Promise<void> {
   await updateDoc(doc(db, 'juris', id), { estado: 'aberto', dataMarcada: null, atualizadoEm: serverTimestamp() });
+}
+
+/** Apaga o júri e as disponibilidades (o Firestore não apaga subcoleções sozinho). */
+export async function eliminarJuri(db: Firestore, id: string): Promise<void> {
+  const disps = await getDocs(collection(db, 'juris', id, 'disponibilidades'));
+  const b = writeBatch(db);
+  disps.docs.forEach((d) => b.delete(d.ref));
+  b.delete(doc(db, 'juris', id));
+  await b.commit();
 }
 
 export async function obterJuri(db: Firestore, id: string): Promise<Juri | null> {
