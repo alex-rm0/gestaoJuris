@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function formadorValido(token, pid) {
+      let caminho = /databases/$(database)/documents/formadores/$(token);
+      return exists(caminho)
+        && get(caminho).data.ativo == true
+        && get(caminho).data.pid == pid;
+    }
+
+    function sessaoPath() {
+      return /databases/$(database)/documents/sessoes/$(request.auth.uid);
+    }
+
+    function temSessaoValida() {
+      return request.auth != null
+        && exists(sessaoPath())
+        && formadorValido(get(sessaoPath()).data.token, get(sessaoPath()).data.pid);
+    }
+
+    function pidDaSessao() {
+      return get(sessaoPath()).data.pid;
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /formadores/{token} {
+      allow get: if true;
+      allow list, write: if isAdmin();
+    }
+
+    match /sessoes/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['token', 'pid'])
+        && formadorValido(request.resource.data.token, request.resource.data.pid);
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /juris/{juriId} {
+      allow read: if isAdmin()
+        || (temSessaoValida() && pidDaSessao() in resource.data.participantesIds);
+      allow write: if isAdmin();
+
+      function juri() {
+        return get(/databases/$(database)/documents/juris/$(juriId)).data;
+      }
+
+      match /disponibilidades/{pid} {
+        allow read: if isAdmin()
+          || (temSessaoValida() && pidDaSessao() in juri().participantesIds);
+        allow create, update: if isAdmin()
+          || (temSessaoValida()
+              && pidDaSessao() == pid
+              && pid in juri().participantesIds
+              && juri().estado == 'aberto'
+              && request.resource.data.keys().hasOnly(['slots', 'atualizadoEm'])
+              && request.resource.data.slots is list
+              && request.resource.data.slots.size() <= 2000);
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}
