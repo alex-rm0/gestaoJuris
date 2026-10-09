@@ -106,3 +106,8 @@ label { display: grid; gap: 0.3rem; font-weight: 500; }
 .sugestao p { margin: 0.2rem 0 0; }
 .medalha { display: inline-block; min-width: 1.6rem; }
 .detalhe h2 { margin-top: 1.75rem; }
+.instrucoes { margin: 0.75rem 0 1rem; }
+.instrucoes p { margin: 0.25rem 0; }
+.estado-gravacao { min-height: 1.3em; font-weight: 500; }
+.estado-gravacao.guardado { color: var(--sucesso-texto); }
+.estado-gravacao.erro { color: var(--perigo); }
